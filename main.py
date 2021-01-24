@@ -8,11 +8,8 @@ pygame.init()
 screen = pygame.display.set_mode(size)
 all_sprites = pygame.sprite.Group()
 clock = pygame.time.Clock()
-
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
-axes = joystick.get_numaxes()
-
+pygame.joystick.init()
+joystick_count = pygame.joystick.get_count()
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -60,8 +57,6 @@ class Player(pygame.sprite.Sprite):
         if self.is_left:
             self.image = pygame.transform.flip(self.image, True, False)
 
-        
-        
     
     def move(self, x, y):
         self.rect = self.rect.move(x, y)
@@ -73,41 +68,77 @@ class Player(pygame.sprite.Sprite):
 player = Player(load_image('idle_hero.png'), load_image('run_hero.png'), 4, 1, 50, 50)
 
 z = 0
+if joystick_count == 0:
+    print(player.rect.x, player.rect.y)
+    while True:
+        z += 1
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT or \
+                event.key == pygame.K_DOWN or \
+                event.key == pygame.K_UP or \
+                event.key == pygame.K_LEFT:
+                    player.cur_state = 'idle'
+        
+        if z % 6 == 0:
+            player.cur_frame = (player.cur_frame + 1) % len(player.idle_frames)
+        # if keys[pygame.K_LEFT]:
+        keys = pygame.key.get_pressed()
+        x = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * 5
+        y = (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * 5
+        if x:
+            print(x)
+            if x < 0:
+                player.is_left = True
+            elif x > 0:
+                player.is_left = False
+            player.move(x, 0)
+        if y:
+            player.move(0, y)
+        
+        screen.fill(pygame.Color("black"))
+        all_sprites.draw(screen)
+        all_sprites.update()
+        pygame.display.flip()
 
-while True:
-    z += 1
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_RIGHT or \
-               event.key == pygame.K_DOWN or \
-               event.key == pygame.K_UP or \
-               event.key == pygame.K_LEFT:
-                player.cur_state = 'idle'
-    
-    if z % 6 == 0:
-        player.cur_frame = (player.cur_frame + 1) % len(player.idle_frames)
-    keys = pygame.key.get_pressed()
-    x = joystick.get_axis(0)
-    y = joystick.get_axis(1)
-    if x and abs(x) > 0.09:
-        if x < 0:
-            player.is_left = True
-        elif x > 0:
-            player.is_left = False
-        player.move(x * 5, 0)
-    if y and abs(y) > 0.02:
-        print(y)
-        player.move(0, y * 5)
+        clock.tick(FPS)
+else:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
+    axes = joystick.get_numaxes()
+
+    while True:
+        z += 1
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        if z % 6 == 0:
+            player.cur_frame = (player.cur_frame + 1) % len(player.idle_frames)
+        x = joystick.get_axis(0)
+        y = joystick.get_axis(1)
+        if x and abs(x) > 0.04:
+            if x < 0:
+                player.is_left = True
+            elif x > 0:
+                player.is_left = False
+            player.move(x * 5, 0)
+            print(x)
+        if y and abs(y) > 0.04:
+            player.move(0, y * 5)
+            print(y)
+        if abs(x) < 0.04 and abs(y) < 0.04:
+            player.cur_state = 'idle'
 
 
-    screen.fill(pygame.Color("black"))
-    all_sprites.draw(screen)
-    all_sprites.update()
-    pygame.display.flip()
+        screen.fill(pygame.Color("black"))
+        all_sprites.draw(screen)
+        all_sprites.update()
+        pygame.display.flip()
 
-    clock.tick(FPS)
+        clock.tick(FPS)
 
 pygame.quit()
