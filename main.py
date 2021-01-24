@@ -9,6 +9,10 @@ screen = pygame.display.set_mode(size)
 all_sprites = pygame.sprite.Group()
 clock = pygame.time.Clock()
 
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
+axes = joystick.get_numaxes()
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -85,21 +89,19 @@ while True:
     
     if z % 6 == 0:
         player.cur_frame = (player.cur_frame + 1) % len(player.idle_frames)
-    # if keys[pygame.K_LEFT]:
     keys = pygame.key.get_pressed()
-    x = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * 5
-    y = (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * 5
-    if x:
-        print(x)
+    x = joystick.get_axis(0)
+    y = joystick.get_axis(1)
+    if x and abs(x) > 0.09:
         if x < 0:
             player.is_left = True
         elif x > 0:
             player.is_left = False
-        player.move(x, 0)
-    if y:
-        player.move(0, y)
-    # player.rect.x += (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * 10
-    # player.rect.y += (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * 10
+        player.move(x * 5, 0)
+    if y and abs(y) > 0.02:
+        print(y)
+        player.move(0, y * 5)
+
 
     screen.fill(pygame.Color("black"))
     all_sprites.draw(screen)
