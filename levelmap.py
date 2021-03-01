@@ -3,12 +3,13 @@ import pytmx
 
 
 class Layer:
+    """класс слоя, хранящий тайлы"""
     def __init__(self, index, levelmap, group):
-        self.index = index
-        print(self.index)
+        self.index = index # номер слоя
 
         self.tiles = pygame.sprite.Group()
         self.levelmap = levelmap
+        # в цикле тайлы добавляются в слой
         for y in range(self.levelmap.height):
             for x in range(self.levelmap.width):
                 image = self.levelmap.map.get_tile_image(x, y, self.index)
@@ -16,16 +17,18 @@ class Layer:
                     self.tiles.add(Tile(x * self.levelmap.tile_size, y * self.levelmap.tile_size, image, group))
 
     def draw(self, screen):
+        """Функция рисует тайлы на экране"""
         self.tiles.draw(screen)
 
 
 class Tile(pygame.sprite.Sprite):
+    # класс тайла
     def __init__(self, x, y, tile, group):
         pygame.sprite.Sprite.__init__(self, group)
         if tile:
-            self.image = tile
+            self.image = tile 
             self.mask = pygame.mask.from_surface(self.image)
-            self.isEmpty = False
+            self.isEmpty = False 
             self.rect = self.image.get_rect()
             self.rect.x = x
             self.rect.y = y
@@ -36,24 +39,22 @@ class Tile(pygame.sprite.Sprite):
 
 
 class LevelMap:
+    # класс всей карты
     def __init__(self, filename, screen, group):
-        self.map = pytmx.load_pygame(filename)
-        self.height = self.map.height
+        self.map = pytmx.load_pygame(filename) # загрузка карты
+        # определение констант карты
+        self.height = self.map.height 
         self.width = self.map.width
-        self.screen = screen
         self.tile_size = 15
+
+        self.screen = screen       
         
+        # создание и заполнение слоёв
         self.layers = []
-        print(self.map.layers)
         for layer in range(len(self.map.layers)):
             self.layers.append(Layer(layer, self, group))
-        print(self.layers)
 
     def render(self, screen):
+        # вывод тайлов слоёв на экран
         for layer in self.layers:
             layer.draw(screen)
-
-    
-    def get_tile_id(self, pos):
-        return self.map.tiledgidmap[self.map.get_tile_gid(*pos, 0)]
-    
