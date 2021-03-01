@@ -1,4 +1,4 @@
-import pygame, os, sys, random 
+import pygame, os, sys, random , pytmx
 from levelmap import LevelMap, Tile # класс карты и тайлов
 
 
@@ -108,7 +108,7 @@ def load_image(name, colorkey=None):
 
 
 background = load_image("background.png")
-background = pygame.transform.scale(background, (1100, 600))
+background = pygame.transform.scale(background, (1100, 800))
 
 
 class Camera:
@@ -257,7 +257,7 @@ class Player(pygame.sprite.Sprite):
                 self.cur_state = 'jump'
             elif self.dy > 0 and self.cur_state != 'hurt':
                 self.cur_state = 'fall'
-        for coin in levelMap.layers[0].tiles:
+        for coin in levelMap.layers[1].tiles:
             if pygame.sprite.collide_mask(player, coin):
                 coin.kill()
                 self.coins_count += 1
@@ -482,15 +482,17 @@ enemy2 = Enemy(2, 1, 2000, 700)
 enemy3 = Enemy(2, 1, 2400, 200)
 ememy4 = Enemy(2, 1, 2600, 213)
 
+# map = pytmx.load_pygame("map.tmx")
 levelMap = LevelMap("map.tmx", screen, all_sprites)
+print(levelMap.map.layernames)
 camera = Camera()
 start_screen()
 
 
 def health():
-    x = 10
+    x = 8
     for i in range(player.lives):
-        screen.blit(heart, (x, 30))
+        screen.blit(heart, (x, 40))
         x += 30
 
 
@@ -504,7 +506,6 @@ while True:
         if event.type == pygame.USEREVENT:
             if player.invincibility:
                 player.invincibility = False
-            print("BOOM")
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
                 player.jump()
@@ -559,9 +560,9 @@ while True:
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
-        player.dx = -15
+        player.dx = -5
     if keys[pygame.K_d]:
-        player.dx = 15
+        player.dx = 5
     if player.cur_state == 'nock' and not keys[pygame.K_j]:
         player.cur_state == 'idle'
     
