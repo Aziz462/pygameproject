@@ -50,10 +50,11 @@ def end_screen(reason, score):
 def start_screen():
     intro_text = ["Вы прибыли за сундуком с сокровищем,",
                   "но он заперт ключом. Ваша задача - найти ключ,",
-                  "но осторожнее, ведь не вы один пришли за добычей...",
-                  "a, d- хобьда, w - прыжок",
+                  "но осторожнее, ведь не вы одни пришли за добычей...",
+                  "a, d- ходьба, w - прыжок",
                   "зажать j и отпустить - выстрел из лука",
-                  "k - удар мечом"]
+                  "k - удар мечом",
+                  "подсказка - чтобы добраться до ключа, выпейте зелье в правом углу карты"]
 
     fon = pygame.transform.scale(load_image('gameover.jpg'), (width, height))
     screen.blit(fon, (0, 0))
@@ -220,7 +221,7 @@ class Player(pygame.sprite.Sprite):
         elif self.dx > 0:
             self.is_left = False
 
-        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[3].tiles, False)
+        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[4].tiles, False)
         for tile in collisionList:
             if self.cur_state == 'hurt':
                 self.dx = 0
@@ -232,7 +233,7 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.y += self.dy
         
-        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[3].tiles, False)
+        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[4].tiles, False)
         if len(collisionList) > 0:
             if player.cur_state == 'hurt':
                 self.dx = 0
@@ -257,11 +258,11 @@ class Player(pygame.sprite.Sprite):
                 self.cur_state = 'jump'
             elif self.dy > 0 and self.cur_state != 'hurt':
                 self.cur_state = 'fall'
-        for coin in levelMap.layers[1].tiles:
+        for coin in levelMap.layers[2].tiles:
             if pygame.sprite.collide_mask(player, coin):
                 coin.kill()
                 self.coins_count += 1
-        if len(pygame.sprite.spritecollide(self, levelMap.layers[2].tiles, False)) > 0:
+        if len(pygame.sprite.spritecollide(self, levelMap.layers[3].tiles, False)) > 0:
             end_screen('dead', self.coins_count + self.enemies_killed * 3)
         if pygame.sprite.collide_mask(self, key):
             self.key = True
@@ -270,7 +271,7 @@ class Player(pygame.sprite.Sprite):
             chest.open()
         if self.cur_state != 'nock' and self.cur_state != 'loose' and self.bowIsReady:
             self.bowIsReady = False
-        for potion in levelMap.layers[4].tiles:
+        for potion in levelMap.layers[1].tiles:
             if pygame.sprite.collide_mask(self, potion):
                 potion.kill()
                 self.potion = True
@@ -313,7 +314,7 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.rect.y += 2
         
-        collision = pygame.sprite.spritecollide(self, levelMap.layers[3].tiles, False)
+        collision = pygame.sprite.spritecollide(self, levelMap.layers[4].tiles, False)
         self.rect.y -= 2
 
         if len(collision) > 0:
@@ -368,7 +369,7 @@ class Arrow(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.dx
         collision = []
-        for tile in levelMap.layers[3].tiles:
+        for tile in levelMap.layers[4].tiles:
             if pygame.sprite.collide_mask(tile, self):
                 collision.append(tile)
         for enemy in enemy_sprites:
@@ -419,14 +420,14 @@ class Enemy(pygame.sprite.Sprite):
             self.dx -= 1
             self.is_right = False
         self.rect.x += self.dx
-        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[3].tiles, False)
+        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[4].tiles, False)
         for tile in collisionList:
             if self.dx > 0:
                 self.rect.right = tile.rect.left
             else:
                 self.rect.left = tile.rect.right
         self.rect.y += self.dy
-        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[3].tiles, False)
+        collisionList = pygame.sprite.spritecollide(self, levelMap.layers[4].tiles, False)
         if len(collisionList) > 0:
             for tile in collisionList:
                 if self.cur_state == 'hurt':
@@ -474,11 +475,11 @@ heart = load_image("heart.png")
 heart = pygame.transform.scale(heart, (20, 20))
       
 
-player = Player(600, 823)
-key = Item(load_image("idle_key.png"), load_image("key_taken.png"), ((8, 1), (5, 1)), 2058, 507)
-chest = Item(load_image("chest_idle.png"), load_image("chest_unlocked.png"), ((1, 1), (8, 1)), 530, 807)
-enemy1 = Enemy(2, 1, 2000, 300)
-enemy2 = Enemy(2, 1, 2000, 700)
+player = Player(600, 1201)
+key = Item(load_image("idle_key.png"), load_image("key_taken.png"), ((8, 1), (5, 1)), 2058, 903)
+chest = Item(load_image("chest_idle.png"), load_image("chest_unlocked.png"), ((1, 1), (8, 1)), 530, 1183)
+enemy1 = Enemy(2, 1, 2000, 700)
+enemy2 = Enemy(2, 1, 2000, 1100)
 enemy3 = Enemy(2, 1, 2400, 200)
 ememy4 = Enemy(2, 1, 2600, 213)
 
