@@ -1,4 +1,4 @@
-import pygame, os, sys, random , pytmx
+import pygame, os, sys, random
 from levelmap import LevelMap, Tile # класс карты и тайлов
 
 
