@@ -43,7 +43,8 @@ def end_screen(reason, score):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN or \
+                    event.type == pygame.KEYDOWN:
                 pygame.quit()
                 sys.exit()
         pygame.display.flip()
@@ -79,7 +80,8 @@ def start_screen():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN or \
+                    event.type == pygame.KEYDOWN:
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
